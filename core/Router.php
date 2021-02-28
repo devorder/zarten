@@ -27,9 +27,13 @@ class Router{
      * 
      * @return void
      */
-    public function add($slug, $params){
+    public function add($slug, $params = []){
 
-        
+        // convert route to regular expression
+        $slug = preg_replace('/\//', '\\/', $slug);
+        // convert variables
+        $slug = preg_replace('/\{([a-zA-Z -]+)\}/', '(?P<\1>[a-zA-z -]+)', $slug);
+        $slug = '/^' . $slug . '$/i';
         $this->routes[$slug] = $params;
     }
 
@@ -47,30 +51,22 @@ class Router{
      */
     public function match($slug){
 
-        // even if user adds '/' it will found the route
-        if($slug[-1] == '/'){
-            $slug = rtrim($slug, '/');
-        }
-
-        if( array_key_exists($slug, $this->routes) ){
-            $this->params = $this->routes[$slug];
-            return true;
-        }
-
         /**
-         * we are gonna support controller/action way also
-         * so if slug is not found, we are gonna looking for controller/action in our routem
+         * we are gonna do controller/action way 
+         * we are gonna looking for controller/action in our routem
          */
 
-        $regExp = '/^(?P<controller>[a-zA-Z -]+)\/(?P<action>[a-zA-Z -]+)$/';
-        if(preg_match($regExp, $slug, $matches)){
-
-            $this->params = $matches;
-            return true;
+        foreach($this->routes as $route => $params){
+            if(preg_match($route, $slug, $match)){
+                // if matching route founds
+                // get named capture group values
+                $this->params = $match;
+                return true;
+            }
         }
 
-        // no route found
         return false;
+
     }
 
     /**

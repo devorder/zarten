@@ -16,15 +16,16 @@ $router = new Router();
 
 // add some routes to router
 $router->add('', ['controller' => 'IndexController', 'action' => 'indexAction']);
-$router->add('/', ['controller' => 'IndexController', 'action' => 'indexAction']);
 $router->add('posts', ['controller' => 'PostsController', 'action' => 'indexAction']);
-$router->add('posts/create', ['controller' => 'PostsController', 'action' => 'createAction']);
+$router->add('{controller}/{action}');
+$router->add('admin/{action}/{controller}');
 
 // match route
 $url = $_SERVER['QUERY_STRING'];
 
 if( $router->match($url) ){
     echo '<pre>';
+    print_r($router->getRoutes());
     print_r($router->getParams());
     echo '</pre>';
 }else{
