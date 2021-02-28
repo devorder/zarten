@@ -32,7 +32,10 @@ class Router{
         // convert route to regular expression
         $slug = preg_replace('/\//', '\\/', $slug);
         // convert variables
-        $slug = preg_replace('/\{([a-zA-Z -]+)\}/', '(?P<\1>[a-zA-z -]+)', $slug);
+        $slug = preg_replace('/\{([a-z]+)\}/', '(?P<\1>[a-z- ]+)', $slug);
+        // convert variables with custom variable expressions
+        $slug = preg_replace('/\{([a-z]+):([^\}]+)\}/', '(?P<\1>\2+)', $slug);
+        // start and end delimeters
         $slug = '/^' . $slug . '$/i';
         $this->routes[$slug] = $params;
     }
@@ -60,13 +63,17 @@ class Router{
             if(preg_match($route, $slug, $match)){
                 // if matching route founds
                 // get named capture group values
-                $this->params = $match;
+                foreach($match as $key => $value){
+                    if(is_string($key)){
+                        $params[$key] = $value;
+                    }
+                }
+                $this->params = $params;
                 return true;
             }
         }
 
         return false;
-
     }
 
     /**

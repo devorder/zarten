@@ -18,6 +18,7 @@ $router = new Router();
 $router->add('', ['controller' => 'IndexController', 'action' => 'indexAction']);
 $router->add('posts', ['controller' => 'PostsController', 'action' => 'indexAction']);
 $router->add('{controller}/{action}');
+$router->add('{controller}/{id:\d+}/{action}');
 $router->add('admin/{action}/{controller}');
 
 // match route
